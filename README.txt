@@ -1,5 +1,4 @@
 mexReadDPX
-
 =======================
 
 Read DPX file in MATLAB using MATLAB MEX functions

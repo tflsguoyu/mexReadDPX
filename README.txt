@@ -43,7 +43,7 @@ Here I provide two DPX file:
 "imageFromWebsite.dpx"
 
 Example of how to use it:
-1. add "mexReadDPX8.mexw64" or "mexReadDPX8.mexw64" to your MATLAB searching path.
+1. add "mexReadDPX8.mexw64" or "mexReadDPX16.mexw64" to your MATLAB searching path.
 2. read DPX file in 8 bits:
 		imageA = mexReadDPX8('imageFromBlackmagic.dpx');
    Now you get an array in format "1080x1920x3 uint8".

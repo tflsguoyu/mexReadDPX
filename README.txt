@@ -3,6 +3,10 @@ mexReadDPX
 
 Read DPX file in MATLAB using MATLAB MEX functions
 
+update: 2015.09.01
+1. fix memory leak problem (Thanks to Dmitry Kuzovkin)
+2. add "script_test.m" to test the function
+
 =======================
 
 Here I provide two MEX functions to read DPX file in MATLAB,
@@ -55,6 +59,9 @@ Example of how to use it:
 5. display this image: 
 		figure;imshow(imageB);
 		
+or 
+
+run "script_test.m" in the same folder.
 		
 ===========================
 

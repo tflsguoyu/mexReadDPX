@@ -75,7 +75,7 @@ void readDPX(char* filename, char* arr)
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    //
+    // Read data from dpx file to array (existing data)
     char* filename = mxArrayToString(prhs[0]);
     
     int height = 0;
@@ -85,16 +85,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     int elements = height * width * 3;
     vector<unsigned char> arr(elements,0);
     
-	readDPX( filename, reinterpret_cast<char*>(&(arr[0])) );
+    readDPX( filename, reinterpret_cast<char*>(&(arr[0])) );
     
-    //
-    UINT8_T *dynamicData;
-    mwSize index, index_color, index_width, index_height;
+    
+    // Pointer to dynamic data (local array)
+    unsigned char *dynamicData;
+    // Pointer to real data in new array
+    unsigned char *pointer;  
+    
     
     // Create a local array and load data
-    dynamicData = (UINT8_T*)mxCalloc(elements, sizeof(UINT8_T));
-
-    // save arr to dynamicData: 
+    dynamicData = (unsigned char *)mxCalloc(elements, sizeof(unsigned char));
+    mwSize index, index_color, index_width, index_height;
     index = 0;
     for ( index_color = 0; index_color < 3; index_color++ )
     {
@@ -108,17 +110,69 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
     }
     
-    // Create a 3-D mxArray; you will allocate the memory dynamically
+    // Create a 3-D mxArray; you will copy local array into it
     mwSize ndim = 3;
     mwSize dims[] = {height,width,3};
     plhs[0] = mxCreateNumericArray(ndim, dims, mxUINT8_CLASS, mxREAL);
-
-    // Point mxArray to dynamicData
-    mxSetData(plhs[0], dynamicData);
+    pointer = (unsigned char *)mxGetPr(plhs[0]);
     
-    int flag = mxSetDimensions(plhs[0], dims, ndim);
-    
-    // must be removed
-    // mxFree(dynamicData); 
+    // Copy local array into the mxArray
+    for ( index = 0; index < elements; index++ ) {
+        pointer[index] = dynamicData[index];
+    }    
+        
+    // You must call mxFree(dynamicData) on the local array.
+    // This is safe because you copied the data into plhs[0] 
+    mxFree(dynamicData); 
     
 }
+
+// void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+// {
+//     //
+//     char* filename = mxArrayToString(prhs[0]);
+//     
+//     int height = 0;
+//     int width = 0;
+//     readDPXresolution(filename, height, width);
+//     
+//     int elements = height * width * 3;
+//     vector<unsigned char> arr(elements,0);
+//     
+// 	readDPX( filename, reinterpret_cast<char*>(&(arr[0])) );
+//     
+//     //
+//     UINT8_T *dynamicData;
+//     mwSize index, index_color, index_width, index_height;
+//     
+//     // Create a local array and load data
+//     dynamicData = (UINT8_T*)mxCalloc(elements, sizeof(UINT8_T));
+// 
+//     // save arr to dynamicData: 
+//     index = 0;
+//     for ( index_color = 0; index_color < 3; index_color++ )
+//     {
+//         for ( index_width = 0; index_width < width; index_width++ )
+//         {
+//             for ( index_height = 0; index_height < height; index_height++ )
+//             { 
+//                 dynamicData[index] = arr[ (width*index_height+index_width)*3+index_color ];
+//                 index++;
+//             }
+//         }
+//     }
+//     
+//     // Create a 3-D mxArray; you will allocate the memory dynamically
+//     mwSize ndim = 3;
+//     mwSize dims[] = {height,width,3};
+//     plhs[0] = mxCreateNumericArray(ndim, dims, mxUINT8_CLASS, mxREAL);
+// 
+//     // Point mxArray to dynamicData
+//     mxSetData(plhs[0], dynamicData);
+//     
+//     int flag = mxSetDimensions(plhs[0], dims, ndim);
+//     
+//     // must be removed
+// //     mxFree(dynamicData); 
+//     
+// }
